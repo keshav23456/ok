@@ -1,0 +1,13 @@
+[project]
+name = "basic-agent"
+version = "0.1.0"
+description = "Basic LiveKit agent"
+requires-python = ">=3.9"
+
+dependencies = [
+    "livekit-agents[azure,silero,turn-detector]~=1.2",
+    "python-dotenv",
+    "numpy",
+    "sounddevice",
+]
+

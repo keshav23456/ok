@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/Live-kit/.venv/bin/python3",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/Live-kit/.venv/lib/python*/site-packages"
+    ]
+}
+
