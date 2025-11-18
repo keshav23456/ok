@@ -62,7 +62,7 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
 6. The agent is multilingual and understands filler words like "acha, haan " etc
 ## What Works
 
-### ✅ **Verified Features**
+###  **Verified Features**
 
 1. **Filler Word Detection**
    - Agent continues speaking when user says only filler words ("umm", "hmm", "uh", etc.)
@@ -96,7 +96,7 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
 
 ## Known Issues
 
-### ⚠️ **Potential Edge Cases**
+###  **Potential Edge Cases**
 
 1. **Database Query Performance**
    - Database is queried for every speech event (interim + final transcripts)
@@ -104,20 +104,20 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
    - **Mitigation**: Keep filler word list reasonably sized (<100 words)
 
 2. **Multilingual support**
-     Due to the incapability to acknowledge hindi as a language even though support and words are added in Azure stt in one go it may create probelem at starting prompts but it resolves  eventually       when user talks in hindi
+     Due to the incapability to acknowledge hindi as a language even though support and words are added in Azure stt in one go it may create problem at starting prompts but it resolves  eventually       when user talks in hindi
 
-4. **Punctuation Sensitivity**
+3. **Punctuation Sensitivity**
    - Current implementation removes basic punctuation (. , ? !)
    - Other punctuation might affect word matching
    - Filler words stored without punctuation work best
 
 
-5. **Database Locking**
+4. **Database Locking**
    - SQLite may lock during concurrent writes
    - Not an issue for single-agent deployments
    - For multi-agent deployments, consider PostgreSQL
 
-6. **No Duration Filtering**
+5. **No Duration Filtering**
    - Filtering is based on transcribed text, not audio duration
    - Very short sounds (<0.1s) may not be detected by VAD or transcribed by STT
    - This is generally good behavior as such sounds are usually noise
@@ -163,29 +163,29 @@ On first run, it will:
 **Test Case 1: Filler words should NOT interrupt**
 1. Let the agent speak
 2. While agent is speaking, say: "umm"
-3. ✅ **Expected**: Agent continues speaking
-4. Check logs for: `🛑 Detected only filler words: 'umm' - will be filtered`
+3.  **Expected**: Agent continues speaking
+4. Check logs for: `Detected only filler words: 'umm' - will be filtered`
 
 **Test Case 2: Real words should interrupt**
 1. Let the agent speak
 2. While agent is speaking, say: "hello"
-3. ✅ **Expected**: Agent stops and listens to you
+3.  **Expected**: Agent stops and listens to you
 4. Agent responds to your real speech
 
 **Test Case 3: Mixed speech should interrupt**
 1. Let the agent speak
 2. While agent is speaking, say: "umm hello"
-3. ✅ **Expected**: Agent stops (because "hello" is a real word)
+3.  **Expected**: Agent stops (because "hello" is a real word)
 
 **Test Case 4: Hindi filler words**
 1. Let the agent speak
 2. While agent is speaking, say: "haan" or "acha"
-3. ✅ **Expected**: Agent continues speaking
+3.  **Expected**: Agent continues speaking
 
 **Test Case 5: Compound filler words**
 1. Let the agent speak
 2. While agent is speaking, say: "uh-huh"
-3. ✅ **Expected**: Agent continues speaking
+3.  **Expected**: Agent continues speaking
 
 ### **5. Manage Filler Words**
 
@@ -198,17 +198,17 @@ uv run python manage_filler_words.py
 **Test adding a word:**
 1. Choose option 2 (Add a single filler word)
 2. Enter: "yeah"
-3. ✅ **Expected**: `Successfully added 'yeah' to the database!`
+3.  **Expected**: `Successfully added 'yeah' to the database!`
 4. Test that "yeah" now filters correctly during agent speech
 
 **Test viewing words:**
 1. Choose option 1 (View all filler words)
-2. ✅ **Expected**: List of all current filler words
+2. **Expected**: List of all current filler words
 
 **Test removing a word:**
 1. Choose option 4 (Remove a filler word)
 2. Enter: "ok"
-3. ✅ **Expected**: `Successfully removed 'ok' from the database!`
+3.  **Expected**: `Successfully removed 'ok' from the database!`
 4. Test that "ok" now interrupts the agent
 
 ---
