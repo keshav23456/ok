@@ -103,20 +103,14 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
    - May cause slight latency with very large filler word lists (>1000 words)
    - **Mitigation**: Keep filler word list reasonably sized (<100 words)
 
-2. **Mixed Speech Handling**
-   - If user says filler word + real word together (e.g., "umm hello"), it will interrupt
-   - Current logic only filters when ALL words are fillers
-   - This is **intentional behavior** to avoid missing real speech
+2. **Multilingual support**
+     Due to the incapability to acknowledge hindi as a language even though support and words are added in Azure stt in one go it may create probelem at starting prompts but it resolves  eventually       when user talks in hindi
 
-3. **Punctuation Sensitivity**
+4. **Punctuation Sensitivity**
    - Current implementation removes basic punctuation (. , ? !)
    - Other punctuation might affect word matching
    - Filler words stored without punctuation work best
 
-4. **Case Sensitivity**
-   - All comparisons are case-insensitive (converted to lowercase)
-   - Database stores words in lowercase
-   - Should not cause issues in practice
 
 5. **Database Locking**
    - SQLite may lock during concurrent writes
