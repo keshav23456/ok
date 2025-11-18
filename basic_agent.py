@@ -58,7 +58,7 @@ def initialize_filler_words():
         if session.query(FillerWord).count() == 0:
             # Default filler words (English and Hindi)
             default_words = [
-                "umm", "uh", "um", "like", "you know", "so", "well",
+                "umm", "uh", "um", "so",
                 "hmm", "hm", "ah", "er", "erm", "ok", "ahhh", "hmmm",
                 "eh", "ehh", "uhh", "haan", "acha"
             ]
