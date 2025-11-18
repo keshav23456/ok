@@ -53,7 +53,13 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
 - Imports `FillerWord` and `Base` from `filler_utils.py`
 
 ---
-
+## Example and cases according to documentation
+1. Case 1 when agent is speaking and user says a "ok","so" etc a filler word agent ignores it and continue speaking
+2. Case 2 when agent is speaking and user says "stop" agent stops speaking
+3. Case 3 when agent is not speaking and user is speaking "so what is your name?" where so is a filler word followed by question so is detected by speech to text and not ignored
+4. Case 4 when agent speaking and user says "ok stop" where ok is filler word but due to "stop" the agent stops speaking
+5. The list of filler words can be dynamically updated when agent is running by upadting the sqlite database
+6. The agent is multilingual and understands filler words like "acha, haan " etc
 ## What Works
 
 ### ✅ **Verified Features**
