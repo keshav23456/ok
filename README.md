@@ -8,37 +8,49 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
 
 ## What Changed
 
-### 1. **New Imports**
+### 1. **Code Organization - Modular Structure**
+- **New file: `filler_utils.py`** - Utility module containing all filler word filtering logic
+  - Database setup and models
+  - Filler word management functions
+  - Text filtering logic
+- **Modified: `basic_agent.py`** - Main agent code now imports from `filler_utils.py`
+  - Cleaner and more maintainable
+  - Separated concerns (agent logic vs. filtering logic)
+
+### 2. **New Imports (in filler_utils.py)**
 - `sqlalchemy` - For database operations
 - `sqlalchemy.ext.declarative` - For ORM model definitions
 - `sqlalchemy.orm` - For session management
 
-### 2. **Database Setup**
+### 3. **Database Setup (in filler_utils.py)**
 - **SQLite Database**: `filler_words.db` (auto-created on first run)
 - **SQLAlchemy Model**: `FillerWord` class with `id` and `word` columns
 - **Table**: `filler_words` stores all filler words
 
-### 3. **New Functions**
+### 4. **New Functions (in filler_utils.py)**
 - `initialize_filler_words()` - Populates database with default filler words on first run
 - `get_filler_words()` - Fetches all filler words from database
 - `is_only_filler_words(text: str)` - Checks if transcribed text contains only filler words
 
-### 4. **Modified Agent Logic**
+### 5. **Modified Agent Logic (in basic_agent.py)**
 - **Override `stt_node()` method** - Intercepts speech-to-text events
 - **Filler word filtering** - Filters out both interim and final transcripts containing only filler words
+- **Imports from filler_utils** - Uses `is_only_filler_words()` function
 - **Dynamic reload** - Fetches latest filler words from database on each check
 
-### 5. **STT Provider Change**
+### 6. **STT Provider Change**
 - **Changed from**: Deepgram (`stt="deepgram/nova-3"`)
 - **Changed to**: Azure Speech (`stt=azure.STT(language=["en-US", "hi-IN"])`)
 - **Multilingual support**: English and Hindi language detection
 
-### 6. **Session Configuration Updates**
+### 7. **Session Configuration Updates**
+- `min_interruption_words=1` - Requires at least 1 word to trigger interruption
 - `false_interruption_timeout=2.0` - Increased timeout for false interruption detection
 - `allow_interruptions=True` - Enabled (filler words filtered at STT level)
 
-### 7. **New Management Script**
+### 8. **New Management Script**
 - `manage_filler_words.py` - Interactive CLI tool to add/remove/view filler words
+- Imports `FillerWord` and `Base` from `filler_utils.py`
 
 ---
 
@@ -68,6 +80,11 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
    - LLM conversation flow works normally
    - Function tools (e.g., `lookup_weather`) work as expected
    - Turn detection and VAD function properly
+
+6. **Modular Code Structure**
+   - Clean separation between agent logic and filtering logic
+   - `filler_utils.py` can be imported by other scripts
+   - Easier to maintain and extend
 
 ---
 
@@ -99,6 +116,11 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
    - SQLite may lock during concurrent writes
    - Not an issue for single-agent deployments
    - For multi-agent deployments, consider PostgreSQL
+
+6. **No Duration Filtering**
+   - Filtering is based on transcribed text, not audio duration
+   - Very short sounds (<0.1s) may not be detected by VAD or transcribed by STT
+   - This is generally good behavior as such sounds are usually noise
 
 ---
 
@@ -133,8 +155,8 @@ uv run python basic_agent.py console
 
 On first run, it will:
 - Create `filler_words.db` in the project directory
-- Initialize with default filler words
-- Log: `Initialized database with 19 filler words`
+- Initialize with default filler words (updated to 18 words)
+- Log: `Initialized database with 18 filler words`
 
 ### **4. Test Filler Word Filtering**
 
@@ -158,6 +180,11 @@ On first run, it will:
 **Test Case 4: Hindi filler words**
 1. Let the agent speak
 2. While agent is speaking, say: "haan" or "acha"
+3. ✅ **Expected**: Agent continues speaking
+
+**Test Case 5: Compound filler words**
+1. Let the agent speak
+2. While agent is speaking, say: "uh-huh"
 3. ✅ **Expected**: Agent continues speaking
 
 ### **5. Manage Filler Words**
@@ -233,7 +260,8 @@ AZURE_SPEECH_REGION=centralindia
 ```
 gen_ai/
 ├── .env                      # Environment variables
-├── basic_agent.py            # Main agent code
+├── basic_agent.py            # Main agent code (imports from filler_utils)
+├── filler_utils.py           # Filler word filtering utilities (NEW)
 ├── manage_filler_words.py    # Database management CLI
 ├── filler_words.db           # SQLite database (auto-created)
 ├── pyproject.toml            # Project dependencies
@@ -242,10 +270,56 @@ gen_ai/
 
 ---
 
+## Module Documentation
+
+### **filler_utils.py**
+
+Utility module for filler word filtering and database management.
+
+**Classes:**
+- `FillerWord(Base)` - SQLAlchemy model for storing filler words
+
+**Functions:**
+- `initialize_filler_words()` - Initialize database with default words
+- `get_filler_words() -> set` - Fetch all filler words from database
+- `is_only_filler_words(text: str) -> bool` - Check if text contains only filler words
+
+**Usage Example:**
+```python
+from filler_utils import is_only_filler_words, get_filler_words
+
+# Check if text is only filler words
+if is_only_filler_words("umm"):
+    print("This is a filler word!")
+
+# Get current filler words
+words = get_filler_words()
+print(f"Current filler words: {words}")
+```
+
+### **manage_filler_words.py**
+
+Interactive command-line tool for managing filler words database.
+
+**Features:**
+1. View all filler words
+2. Add a single filler word
+3. Add multiple filler words (comma-separated)
+4. Remove a filler word
+5. Clear all filler words
+6. Exit
+
+**Usage:**
+```bash
+uv run python manage_filler_words.py
+```
+
+---
+
 ## Quick Reference
 
 ### **Default Filler Words**
-English: umm, uh, um, like, you know, so, well, hmm, hm, ah, er, erm, ok, ahhh, hmmm, eh, ehh, uhh
+English: umm, uh, um, so, hmm, hm, ah, er, erm, ok, ahhh, hmmm, eh, ehh, uhh, uh-huh
 
 Hindi: haan, acha
 
@@ -254,6 +328,8 @@ Hindi: haan, acha
 ```bash
 # Start agent
 uv run python basic_agent.py dev
+# or
+uv run python basic_agent.py console
 
 # Manage filler words
 uv run python manage_filler_words.py
@@ -274,6 +350,7 @@ uv sync
 - No filler word filtering
 - Static configuration
 - English only
+- All code in single file
 
 ### **Enhanced Code**
 - Uses Azure Speech STT
@@ -282,6 +359,7 @@ uv sync
 - English + Hindi support
 - Custom `stt_node()` override for filtering
 - Management CLI tool included
+- Modular structure with `filler_utils.py` utility module
 
 ---
 

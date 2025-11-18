@@ -5,7 +5,7 @@ Script to add, remove, or view filler words in the SQLite database.
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from basic_agent import FillerWord, Base
+from filler_utils import FillerWord, Base
 
 # Database setup
 engine = create_engine('sqlite:///filler_words.db', echo=False)
