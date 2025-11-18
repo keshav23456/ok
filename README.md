@@ -34,7 +34,6 @@ This is an enhanced version of the basic LiveKit voice agent that intelligently 
 - **Multilingual support**: English and Hindi language detection
 
 ### 6. **Session Configuration Updates**
-- `min_interruption_words=2` - Requires at least 2 words to trigger interruption
 - `false_interruption_timeout=2.0` - Increased timeout for false interruption detection
 - `allow_interruptions=True` - Enabled (filler words filtered at STT level)
 
@@ -129,7 +128,7 @@ AZURE_SPEECH_REGION=centralindia  # or your region
 ### **3. Start the Agent**
 
 ```bash
-uv run python basic_agent.py dev
+uv run python basic_agent.py console
 ```
 
 On first run, it will:
